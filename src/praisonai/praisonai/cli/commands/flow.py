@@ -6,9 +6,14 @@ PraisonAI custom components (Agent, Agents, Task) pre-loaded.
 
 import typer
 
-import click
-
 app = typer.Typer(name="flow", help="Visual workflow builder (Langflow)")
+
+
+def _validate_export_format(value: str) -> str:
+    # Plain callback instead of `click_type=` — newer Typer releases removed it.
+    if value not in ("yaml", "json"):
+        raise typer.BadParameter("must be one of: yaml, json")
+    return value
 
 
 @app.callback(invoke_without_command=True)
@@ -263,7 +268,7 @@ def flow_export(
         "yaml",
         "--format",
         help="Output format (yaml, json)",
-        click_type=click.Choice(["yaml", "json"])
+        callback=_validate_export_format,
     ),
 ):
     """Export Langflow flow to YAML format.
